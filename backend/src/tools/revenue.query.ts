@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { RevenueRepository } from "../repositories/revenue.repository";
 import { RevenueQueryInput } from "./definitions";
 

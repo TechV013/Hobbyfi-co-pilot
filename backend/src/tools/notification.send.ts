@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { z } from "zod";
 import { UserRepository } from "../repositories/user.repository";
 import { NotificationSendInput } from "./definitions";
 import { ValidationError } from "../lib/errors";
@@ -10,7 +11,7 @@ export async function notificationSendTool(
   userRepo: UserRepository,
   prisma: PrismaClient,
 ) {
-  const users = await Promise.all(input.userIds.map((uid) => userRepo.findById(vendorId, uid)));
+  const users = await Promise.all(input.userIds.map((uid: string) => userRepo.findById(vendorId, uid)));
 
   const found = users.filter(Boolean);
   if (found.length !== input.userIds.length) {

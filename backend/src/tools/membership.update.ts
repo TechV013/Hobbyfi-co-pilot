@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { z } from "zod";
 import { UserRepository } from "../repositories/user.repository";
 import { MembershipUpdateInput } from "./definitions";
 import { ValidationError } from "../lib/errors";
