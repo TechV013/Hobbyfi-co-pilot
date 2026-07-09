@@ -1,0 +1,22 @@
+node_modules/
+.next/
+.env
+*.env.local
+*.log
+dist/
+.turbo/
+*.db
+*.sqlite
+*.sqlite-journal
+
+# Backend
+backend/dist/
+
+# Prisma
+backend/prisma/migrations/*/migration_lock.toml
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

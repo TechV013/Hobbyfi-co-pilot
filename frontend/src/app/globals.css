@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@layer base {
+  body {
+    @apply font-sans antialiased;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand;
+  }
+}
+
+@layer components {
+  .chat-bubble-user {
+    @apply bg-brand text-white rounded-2xl rounded-br-sm px-4 py-2.5 text-sm leading-relaxed;
+  }
+
+  .chat-bubble-assistant {
+    @apply bg-brand-soft text-gray-800 rounded-2xl rounded-bl-sm px-4 py-2.5 text-sm leading-relaxed;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-4 py-2 bg-brand text-white text-sm font-medium rounded-lg
+           hover:bg-brand-deep focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed transition-colors;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-4 py-2 border border-gray-200 text-gray-700 text-sm font-medium rounded-lg
+           hover:bg-gray-50 focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed transition-colors;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm
+           focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand
+           placeholder:text-gray-400 transition-colors;
+  }
+}
