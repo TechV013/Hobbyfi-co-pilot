@@ -35,11 +35,11 @@ app.use(
     crossOriginEmbedderPolicy: false,
   }),
 );
-const corsOrigin = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(",")
-  : ["http://localhost:3000"];
+const corsOptions: cors.CorsOptions = process.env.ALLOWED_ORIGINS
+  ? { origin: process.env.ALLOWED_ORIGINS.split(","), credentials: true }
+  : { origin: true, credentials: true };
 
-app.use(cors({ origin: corsOrigin, credentials: true }));
+app.use(cors(corsOptions));
 app.use(express.json({ limit: "10kb" }));
 app.disable("x-powered-by");
 
