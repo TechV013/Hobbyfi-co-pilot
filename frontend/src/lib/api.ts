@@ -1,4 +1,4 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+const API_BASE = "";
 let authToken: string | null = null;
 
 export function setAuthToken(token: string) {
