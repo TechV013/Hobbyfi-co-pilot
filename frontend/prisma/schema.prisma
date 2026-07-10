@@ -1,0 +1,143 @@
+generator client {
+  provider        = "prisma-client-js"
+  binaryTargets   = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Vendor {
+  id               String    @id @default(uuid())
+  name             String
+  academyName      String
+  city             String
+  sportsOffered    String
+  subscriptionPlan String
+  createdAt        DateTime  @default(now())
+
+  users            User[]
+  bookings         Booking[]
+  payments         Payment[]
+  revenues         Revenue[]
+  auditLogs        AuditLog[]
+  pendingApprovals PendingApproval[]
+  preferences      VendorPreference?
+}
+
+model User {
+  id              String    @id @default(uuid())
+  vendorId        String
+  vendor          Vendor    @relation(fields: [vendorId], references: [id])
+  name            String
+  phone           String
+  email           String?
+  sport           String
+  membershipType  String
+  membershipStart DateTime
+  membershipEnd   DateTime
+  trialStatus     Boolean   @default(false)
+  coachAssigned   String?
+  createdAt       DateTime  @default(now())
+
+  bookings Booking[]
+  payments Payment[]
+
+  @@index([vendorId])
+  @@index([vendorId, sport])
+  @@index([vendorId, membershipEnd])
+  @@index([vendorId, phone])
+}
+
+model Booking {
+  id       String   @id @default(uuid())
+  vendorId String
+  vendor   Vendor   @relation(fields: [vendorId], references: [id])
+  userId   String
+  user     User     @relation(fields: [userId], references: [id])
+  sport    String
+  slot     String
+  date     DateTime
+  status   String
+  coachId  String?
+
+  payment Payment?
+
+  @@index([vendorId, date])
+  @@index([vendorId, status])
+}
+
+model Payment {
+  id        String    @id @default(uuid())
+  vendorId  String
+  vendor    Vendor    @relation(fields: [vendorId], references: [id])
+  bookingId String?   @unique
+  booking   Booking?  @relation(fields: [bookingId], references: [id])
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  amount    Float
+  method    String
+  status    String
+  paidAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([vendorId, status])
+  @@index([vendorId, paidAt])
+}
+
+model Revenue {
+  id             String   @id @default(uuid())
+  vendorId       String
+  vendor         Vendor   @relation(fields: [vendorId], references: [id])
+  date           DateTime
+  onlineRevenue  Float
+  offlineRevenue Float
+  totalRevenue   Float
+
+  @@unique([vendorId, date])
+}
+
+model PendingApproval {
+  id             String   @id @default(uuid())
+  vendorId       String
+  vendor         Vendor   @relation(fields: [vendorId], references: [id])
+  conversationId String
+  toolName       String
+  targetTable    String
+  targetId       String
+  previousValue  String
+  proposedValue  String
+  status         String   @default("pending")
+  createdAt      DateTime @default(now())
+  expiresAt      DateTime
+  resolvedAt     DateTime?
+
+  @@index([vendorId, status])
+}
+
+model AuditLog {
+  id             String   @id @default(uuid())
+  vendorId       String
+  vendor         Vendor   @relation(fields: [vendorId], references: [id])
+  operation      String
+  targetTable    String
+  targetId       String
+  previousValue  String
+  newValue       String
+  approvalStatus String
+  createdAt      DateTime @default(now())
+
+  @@index([vendorId, createdAt])
+}
+
+model VendorPreference {
+  vendorId              String  @id
+  vendor                Vendor  @relation(fields: [vendorId], references: [id])
+  defaultSportFilter    String?
+  favoriteReports       String  @default("[]")
+  frequentlyUsedFilters String  @default("{}")
+  preferredLanguage     String  @default("en")
+  timezone              String  @default("Asia/Kolkata")
+  updatedAt             DateTime @updatedAt
+}

@@ -15,6 +15,9 @@ backend/dist/
 # Prisma
 backend/prisma/migrations/*/migration_lock.toml
 
+# TypeScript
+*.tsbuildinfo
+
 # IDE
 .vscode/
 .idea/
