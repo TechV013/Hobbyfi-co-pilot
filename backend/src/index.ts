@@ -35,14 +35,11 @@ app.use(
     crossOriginEmbedderPolicy: false,
   }),
 );
-app.use(
-  cors({
-    origin: process.env.ALLOWED_ORIGINS
-      ? process.env.ALLOWED_ORIGINS.split(",")
-      : ["http://localhost:3000", "https://*.vercel.app"],
-    credentials: true,
-  }),
-);
+const corsOrigin = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",")
+  : ["http://localhost:3000"];
+
+app.use(cors({ origin: corsOrigin, credentials: true }));
 app.use(express.json({ limit: "10kb" }));
 app.disable("x-powered-by");
 

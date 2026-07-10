@@ -14,7 +14,7 @@
     "test": "npm run test:smoke && npm run test:vitest",
     "test:vitest": "vitest run",
     "test:smoke": "npx prisma generate --schema=prisma/schema.sqlite.prisma && tsx src/scripts/run-tests.ts",
-    "vercel-build": "npx prisma generate && npx tsc",
+    "vercel-build": "npx prisma generate",
     "lint": "eslint src/ --ext .ts",
     "format": "prettier --write \"src/**/*.ts\"",
     "format:check": "prettier --check \"src/**/*.ts\"",
