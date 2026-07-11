@@ -81,6 +81,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (
+      /^data:image\//i.test(message) ||
+      /^(https?:\/\/.*)?\.(png|jpg|jpeg|gif|webp|bmp|svg|ico|tiff?|heic|heif|avif)$/i.test(message.trim()) ||
+      /(?:image|img|file)\.(png|jpg|jpeg|gif|webp|bmp|svg|ico|tiff?|heic|heif|avif)\b/i.test(message) ||
+      /^https?:\/\/.*\.(png|jpg|jpeg|gif|webp|bmp|svg)(\?.*)?$/i.test(message.trim())
+    ) {
+      return NextResponse.json(
+        { error: { code: "UNSUPPORTED_MEDIA", message: "Image and file inputs are not supported. Please send text only." } },
+        { status: 415 },
+      );
+    }
+
     if (!conversationId || typeof conversationId !== "string" || conversationId.length > 128) {
       return NextResponse.json(
         {

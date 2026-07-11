@@ -86,6 +86,14 @@ export async function processMessage(
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred";
     logger.error("Agent execution failed", { vendorId, error: errorMessage });
-    return { reply: `I encountered an issue: ${errorMessage}. Please try again.` };
+
+    if (/does not support (image|file|audio|video)/i.test(errorMessage) || /unsupported.*(image|file|media)/i.test(errorMessage) || /cannot read.*\.(png|jpg|jpeg|gif|webp|svg)/i.test(errorMessage)) {
+      return { reply: "I can only process text messages. Images and files are not supported." };
+    }
+    if (/quota|rate.limit|exceeded.*quota/i.test(errorMessage) || /currently.*unavailable/i.test(errorMessage)) {
+      return { reply: "I'm currently unavailable due to high demand. Please try again shortly." };
+    }
+
+    return { reply: "I encountered an issue processing your request. Please try again." };
   }
 }

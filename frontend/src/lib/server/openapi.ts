@@ -7,7 +7,7 @@ export const apiSpec: OpenAPIV3.Document = {
     version: "1.0.0",
     description: "AI-powered vendor copilot for member management, revenue insights, and notifications.",
   },
-  servers: [{ url: "http://localhost:4000", description: "Local development" }],
+  servers: [{ url: "http://localhost:3000", description: "Local development" }],
   components: {
     securitySchemes: {
       bearerAuth: {
