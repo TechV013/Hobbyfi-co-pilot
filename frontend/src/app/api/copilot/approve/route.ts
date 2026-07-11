@@ -6,6 +6,8 @@ import { ConsoleNotificationService } from "@/lib/server/notification/notificati
 import { AppError } from "@/lib/server/lib/errors";
 import { logger } from "@/lib/server/lib/logger";
 
+export const maxDuration = 30;
+
 const notificationService = new ConsoleNotificationService();
 const approvalEngine = new ApprovalEngine(prisma, notificationService);
 

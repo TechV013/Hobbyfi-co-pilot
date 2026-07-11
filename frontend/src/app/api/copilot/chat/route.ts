@@ -3,6 +3,8 @@ import jwt from "jsonwebtoken";
 import { processMessage } from "@/lib/server/orchestration";
 import { logger } from "@/lib/server/lib/logger";
 
+export const maxDuration = 30;
+
 const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
 const RATE_LIMIT_WINDOW = 60_000;
 const RATE_LIMIT_MAX = 30;
