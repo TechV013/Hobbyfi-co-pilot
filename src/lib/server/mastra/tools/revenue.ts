@@ -10,9 +10,8 @@ export const revenueTool = createTool({
   id: "revenue.query",
   description: `Query revenue/earnings data for this vendor's sports academy.
 Use when the user asks about revenue, earnings, income, collections, or money made.
-Supports range: 'today', 'yesterday', 'this_week', 'this_month', or 'custom'.
-For 'custom' you must also provide startDate and endDate (ISO strings).
-Examples: "What is today's revenue?", "How much did I make yesterday?", "Show me this week's earnings"`,
+Range options: 'today', 'yesterday', 'this_week', 'this_month'.
+Examples: "What is today's revenue?", "How much did I make yesterday?", "Show me my earnings this month".`,
   inputSchema: RevenueQueryInput,
   execute: async (inputData, { requestContext }) => {
     const vendorId = requestContext?.get("vendorId") as string;

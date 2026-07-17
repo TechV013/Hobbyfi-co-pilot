@@ -1,24 +1,39 @@
 import { createTool } from "@mastra/core/tools";
+import { z } from "zod";
 import { UserRepository } from "../../repositories/user.repository";
 import { prisma } from "../../db";
-import { UserSearchInput } from "../../tools/definitions";
 import { userSearchTool } from "../../tools/user.search";
 
 const repo = new UserRepository(prisma);
 
+const sportMap: Record<string, string> = {
+  cricket: "Cricket",
+  football: "Football",
+  badminton: "Badminton",
+  swimming: "Swimming",
+  yoga: "Yoga",
+  gym: "Gym",
+};
+
 export const userSearchMastraTool = createTool({
   id: "user.search",
-  description: `Search for members (players/students) registered with this vendor.
-Use when the user wants to find, list, show, search, or look up members.
-All filters are optional — omit them to get a broad list.
-Filters: sport (e.g. 'cricket', 'football', 'badminton', 'swimming', 'yoga'),
-trialOnly (boolean — only trial members),
-expiringWithinDays (number — members whose membership ends within that many days),
-nameOrPhoneQuery (string — partial name or phone search).
-Examples: "Find trial members", "Show me cricket players", "Search for members with expiring memberships"`,
-  inputSchema: UserSearchInput,
-  execute: async (inputData, { requestContext }) => {
+  description: `Search for members registered with this vendor. Call this ANY time the user asks about members, players, students, or any person — listing, finding, counting, searching, filtering. Always use this tool instead of guessing.`,
+  inputSchema: z.object({
+    q: z.string().describe("Search query describing members. Examples: 'all', 'cricket', 'football', 'trial members', 'expiring soon'"),
+  }),
+  execute: async ({ q }, { requestContext }) => {
     const vendorId = requestContext?.get("vendorId") as string;
-    return userSearchTool(vendorId, inputData, repo);
+    const query = (q || "").toLowerCase();
+    const filters: Record<string, unknown> = {};
+
+    if (query && query !== "all" && query !== "members" && query !== "list members" && query !== "show all" && query !== "everyone") {
+      for (const [key, val] of Object.entries(sportMap)) {
+        if (query.includes(key)) { filters.sport = val; break; }
+      }
+      if (query.includes("trial")) filters.trialOnly = true;
+      if (query.includes("expir")) filters.expiringWithinDays = 7;
+    }
+
+    return userSearchTool(vendorId, filters, repo);
   },
 });

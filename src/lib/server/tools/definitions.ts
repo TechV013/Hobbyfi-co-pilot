@@ -1,14 +1,8 @@
 import { z } from "zod";
 
-export const RevenueQueryInput = z
-  .object({
-    range: z.enum(["today", "yesterday", "this_week", "this_month", "custom"]),
-    startDate: z.string().datetime().optional(),
-    endDate: z.string().datetime().optional(),
-  })
-  .refine((data) => data.range !== "custom" || (data.startDate && data.endDate), {
-    message: "startDate and endDate are required when range is 'custom'",
-  });
+export const RevenueQueryInput = z.object({
+  range: z.enum(["today", "yesterday", "this_week", "this_month"]).default("this_month"),
+});
 
 export const UserSearchInput = z.object({
   sport: z.string().optional(),
@@ -16,7 +10,7 @@ export const UserSearchInput = z.object({
   trialOnly: z.boolean().optional(),
   expiringWithinDays: z.number().int().positive().optional(),
   nameOrPhoneQuery: z.string().optional(),
-  limit: z.number().int().positive().max(100).default(20),
+  coachAssigned: z.string().optional(),
 });
 
 export const BookingQueryInput = z.object({

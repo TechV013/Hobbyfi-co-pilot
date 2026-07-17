@@ -1,6 +1,7 @@
 import { RequestContext } from "@mastra/core/request-context";
 import { detectPromptInjection } from "./guardrails/preFilter";
 import { hobbyfiAgent } from "./mastra";
+import { routeMessage } from "./router";
 import { MemoryManager } from "./memory/memory-manager";
 import { logger } from "./lib/logger";
 
@@ -26,6 +27,13 @@ export async function processMessage(
     return { reply: "I cannot fulfill this request as it violates security policies." };
   }
 
+  const { intent, reply: routerReply } = await routeMessage(vendorId, message);
+
+  if (routerReply !== null) {
+    await memoryManager.saveTurn(vendorId, conversationId, message, routerReply, intent);
+    return { reply: routerReply };
+  }
+
   try {
     const { memoryContext, contextMessages } = await memoryManager.loadContext(
       vendorId,
@@ -33,16 +41,16 @@ export async function processMessage(
       message,
     );
 
-    const enrichedContext = contextMessages;
-
     const requestCtx = new RequestContext<{ vendorId: string; conversationId: string }>();
     requestCtx.set("vendorId", vendorId);
     requestCtx.set("conversationId", conversationId);
 
+    const systemCtx = contextMessages.map((m) => String(m.content)).join("\n");
+
     const fullOutput = await hobbyfiAgent.generate(message, {
       requestContext: requestCtx,
-      context: enrichedContext as any,
-      maxSteps: 10,
+      system: systemCtx || undefined,
+      maxSteps: 3,
     });
 
     const reply = fullOutput.text;
@@ -87,13 +95,20 @@ export async function processMessage(
     const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred";
     logger.error("Agent execution failed", { vendorId, error: errorMessage });
 
-    if (/does not support (image|file|audio|video)/i.test(errorMessage) || /unsupported.*(image|file|media)/i.test(errorMessage) || /cannot read.*\.(png|jpg|jpeg|gif|webp|svg)/i.test(errorMessage)) {
+    if (/does not support (image|file|audio|video)/i.test(errorMessage) || /unsupported.*(image|file|media)/i.test(errorMessage) || /cannot read.*\.(png|jpg|jpeg|gif|webp|svg)/i.test(errorMessage) || /cannot read.*image\.png/i.test(errorMessage)) {
       return { reply: "I can only process text messages. Images and files are not supported." };
     }
-    if (/quota|rate.limit|exceeded.*quota/i.test(errorMessage) || /currently.*unavailable/i.test(errorMessage)) {
-      return { reply: "I'm currently unavailable due to high demand. Please try again shortly." };
+    if (/rate.limit|quota|resource.*exhausted|insufficient.*quota/i.test(errorMessage)) {
+      return { reply: "I'm temporarily unavailable. Please wait a moment and try again." };
+    }
+    if (/API_KEY|api.?key|not.*found|not.*valid|unauthorized/i.test(errorMessage)) {
+      return { reply: "I'm having trouble connecting to my AI service. Please check the API configuration." };
+    }
+    if (/database|db|prisma|ECONNREFUSED|getaddrinfo/i.test(errorMessage)) {
+      return { reply: "I can answer general questions, but detailed data queries are unavailable right now because the database is not connected." };
     }
 
-    return { reply: "I encountered an issue processing your request. Please try again." };
+    logger.error("Unhandled agent error", { errorMessage, vendorId });
+    return { reply: "I encountered an issue. Please try again." };
   }
 }

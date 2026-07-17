@@ -11,13 +11,10 @@
     "db:seed": "npx tsx prisma/seed.ts"
   },
   "dependencies": {
-    "@ai-sdk/google": "^4.0.11",
     "@ai-sdk/groq": "^4.0.7",
-    "@ai-sdk/openai": "^4.0.11",
     "@mastra/core": "^1.50.1",
     "@prisma/client": "^5.14.0",
     "@radix-ui/react-dialog": "^1.1.0",
-    "ai": "^7.0.19",
     "cors": "^2.8.5",
     "debug": "^4.3.4",
     "jsonwebtoken": "^9.0.2",

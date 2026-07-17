@@ -37,10 +37,6 @@ export async function revenueQueryTool(
       endDate = now.toISOString();
       break;
     }
-    case "custom":
-      startDate = input.startDate;
-      endDate = input.endDate;
-      break;
   }
 
   const records = await repo.query(vendorId, { startDate, endDate });

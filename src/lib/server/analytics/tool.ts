@@ -12,6 +12,17 @@ import {
 } from "./queries";
 import { generateInsights } from "./insights";
 
+export {
+  queryRevenue,
+  queryBookingTrends,
+  queryTrialConversion,
+  queryMembershipGrowth,
+  queryCoachPerformance,
+  queryPeakHours,
+  queryCancellationRate,
+  queryPaymentSuccessRate,
+};
+
 const QUERY_ROUTER: Record<
   string,
   (vendorId: string, timeframe: string, sport?: string) => Promise<Record<string, unknown>>

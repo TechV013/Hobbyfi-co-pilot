@@ -14,8 +14,10 @@ export async function userSearchTool(vendorId: string, input: z.infer<typeof Use
       email: u.email,
       sport: u.sport,
       membershipType: u.membershipType,
+      membershipStart: u.membershipStart.toISOString(),
       membershipEnd: u.membershipEnd.toISOString(),
       trialStatus: u.trialStatus,
+      coachAssigned: u.coachAssigned,
     })),
   };
 }

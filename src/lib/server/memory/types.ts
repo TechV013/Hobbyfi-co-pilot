@@ -46,8 +46,6 @@ export interface IKnowledgeMemory {
 
 export interface MemoryContext {
   session: SessionData;
-  preferences: VendorPreferences;
-  knowledge: KnowledgeEntry[];
 }
 
 export const SESSION_TTL = 30 * 60;
