@@ -112,6 +112,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(result);
   } catch (err) {
     const message = err instanceof Error ? err.message : "Internal error";
+    if (/cannot read.*\.(png|jpg|jpeg|gif|webp|svg)/i.test(message)) {
+      logger.warn("Image content blocked", { error: message });
+      return NextResponse.json({ reply: "I can only process text messages. Images and files are not supported." });
+    }
     logger.error("Chat error", { error: message });
     return NextResponse.json(
       { error: { code: "INTERNAL_ERROR", message } },

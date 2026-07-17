@@ -95,14 +95,14 @@ export async function processMessage(
     const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred";
     logger.error("Agent execution failed", { vendorId, error: errorMessage });
 
-    if (/does not support (image|file|audio|video)/i.test(errorMessage) || /unsupported.*(image|file|media)/i.test(errorMessage) || /cannot read.*\.(png|jpg|jpeg|gif|webp|svg)/i.test(errorMessage) || /cannot read.*image\.png/i.test(errorMessage)) {
-      return { reply: "I can only process text messages. Images and files are not supported." };
-    }
     if (/rate.limit|quota|resource.*exhausted|insufficient.*quota/i.test(errorMessage)) {
       return { reply: "I'm temporarily unavailable. Please wait a moment and try again." };
     }
     if (/API_KEY|api.?key|not.*found|not.*valid|unauthorized/i.test(errorMessage)) {
       return { reply: "I'm having trouble connecting to my AI service. Please check the API configuration." };
+    }
+    if (/cannot read|image|file|unsupported.*media/i.test(errorMessage)) {
+      return { reply: "I can only process text messages. Images and files are not supported." };
     }
     if (/database|db|prisma|ECONNREFUSED|getaddrinfo/i.test(errorMessage)) {
       return { reply: "I can answer general questions, but detailed data queries are unavailable right now because the database is not connected." };

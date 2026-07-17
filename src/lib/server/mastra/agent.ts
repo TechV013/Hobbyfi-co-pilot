@@ -10,6 +10,9 @@ import {
 
 const MODEL = process.env.LLM_MODEL || "llama-3.1-8b-instant";
 
+const groqModel = groq(MODEL);
+(groqModel as unknown as { supportedUrls: Record<string, RegExp[]> }).supportedUrls = {};
+
 export const hobbyfiAgent = new Agent({
   id: "hobbyfi-copilot",
   name: "HobbyFi Copilot",
@@ -36,7 +39,7 @@ Write tools returning "previewId" need user Approve/Reject.
 - Members: "Found {count} member(s): {name} ({sport}, {membershipType}), ..."
 - Approvals: "I've prepared a change. Check the approval card above."
 - Errors: "I encountered an issue: {error}. Please try again."`,
-  model: groq(MODEL),
+  model: groqModel,
   tools: {
     "revenue.query": revenueTool,
     "user.search": userSearchMastraTool,
